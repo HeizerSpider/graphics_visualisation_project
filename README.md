@@ -3,7 +3,9 @@
 ##### Build
 ```
 cd src
-make -f Makefile.mac # change mac to windows/linux depending on your OS
+# change mac to windows/linux depending on your OS
+make -f Makefile.mac clean
+make -f Makefile.mac
 ```
 
 ##### Run
