@@ -484,15 +484,15 @@ void displayCB() {
 
     // float zackColor[] = {1.0f, 1.0f, 1.0f, 1};
 
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
+    for (int i = 0; i < 100; i++) {
+        for (int j = 0; j < 100; j++) {
             glPushMatrix();
-            glTranslatef(-10.5f + i * 2.5f, -10.5f + j * 2.5f, 0);
+            glTranslatef(-125.0f + i * 2.5f, -125.0f + j * 2.5f, 0);
             // glRotatef(cameraAngleX, 1, 0, 0);
             // glRotatef(cameraAngleY, 0, 1, 0);
             // glRotatef(-90, 1, 0, 0);
             glBindTexture(GL_TEXTURE_2D, 0);
-            float zackColor[] = {float(i * 10) / 100, float(j * 10) / 100,
+            float zackColor[] = {float(i) / 100, float(j) / 100,
                                  float(frame) * 0.01f, 1};
             spheres[i * 10 + j].drawWithLines(zackColor);
             glPopMatrix();
@@ -542,6 +542,8 @@ void reshapeCB(int w, int h) {
 void timerCB(int millisec) {
     glutTimerFunc(millisec, timerCB, millisec);
     glutPostRedisplay();
+    ++frame;
+    frame %= 100;
 }
 
 void keyboardCB(unsigned char key, int x, int y) {
@@ -550,10 +552,10 @@ void keyboardCB(unsigned char key, int x, int y) {
             clearSharedMem();
             exit(0);
             break;
-        case 'z':
-            ++frame;
-            frame %= 100;
-            break;
+            // case 'z':
+            //     ++frame;
+            //     frame %= 100;
+            //     break;
 
         case 'd':  // switch rendering modes (fill -> wire -> point)
         case 'D':
