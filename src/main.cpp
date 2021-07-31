@@ -46,7 +46,7 @@ GLuint loadTexture(const char *fileName, bool wrap = true);
 // constants
 const int SCREEN_WIDTH = 1500;
 const int SCREEN_HEIGHT = 500;
-const float CAMERA_DISTANCE = 4.0f;
+const float CAMERA_DISTANCE = 350.0f;
 const int TEXT_WIDTH = 8;
 const int TEXT_HEIGHT = 13;
 
