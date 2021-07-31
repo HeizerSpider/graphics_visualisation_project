@@ -66,6 +66,8 @@ GLuint texId;
 int imageWidth;
 int imageHeight;
 
+int frame;
+
 // sphere: min sector = 3, min stack = 2
 Sphere sphere1(1.0f, 36, 18,
                false);  // radius, sectors, stacks, non-smooth (flat) shading
@@ -216,6 +218,7 @@ bool initSharedMem() {
 
     drawMode = 0;  // 0:fill, 1: wireframe, 2:points
 
+    frame = 0;
     // debug
     sphere2.printSelf();
 
@@ -490,7 +493,7 @@ void displayCB() {
             // glRotatef(-90, 1, 0, 0);
             glBindTexture(GL_TEXTURE_2D, 0);
             float zackColor[] = {float(i * 10) / 100, float(j * 10) / 100,
-                                 float(10 / (i + 1)) / 100, 1};
+                                 float(frame) * 0.01f, 1};
             spheres[i * 10 + j].drawWithLines(zackColor);
             glPopMatrix();
         }
@@ -546,6 +549,10 @@ void keyboardCB(unsigned char key, int x, int y) {
         case 27:  // ESCAPE
             clearSharedMem();
             exit(0);
+            break;
+        case 'z':
+            ++frame;
+            frame %= 100;
             break;
 
         case 'd':  // switch rendering modes (fill -> wire -> point)
