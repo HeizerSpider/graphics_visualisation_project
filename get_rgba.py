@@ -7,21 +7,19 @@ print(im)
 foo = im.resize((2,2),Image.ANTIALIAS)
 px = list(foo.getdata())
 
-def tupleToString(tup):
+def tuple_to_string(tup):
     s = ''
     for item in tup:
-        s = s + str(item) + ' '
-    return s[:-1]+'\n'
+        s = s + str(item) + '\n'
+    return s
 
 converted = []
 for pixel in px:
     norm = tuple(val/255 for val in pixel)
     # converted.append(norm)
-    converted.append(tupleToString(norm))
+    converted.append(tuple_to_string(norm))
 
-print(converted)
-
-file1 = open('output.txt', 'w')
+file1 = open('rgba.txt', 'w')
 file1.writelines(converted)
 file1.close()
 
