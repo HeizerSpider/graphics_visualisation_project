@@ -437,7 +437,9 @@ void displayCB() {
     glPushMatrix();
 
     // tramsform modelview matrix
-    glTranslatef(0, 0, -cameraDistance);
+    //ANCHOR: CAMERA DISTANCE
+    glTranslatef(0, 0, -20);
+    // glTranslatef(0, 0, -cameraDistance);
 
     // set material
     float ambient[] = {0.5f, 0.5f, 0.5f, 1};
@@ -484,18 +486,41 @@ void displayCB() {
 
     // float zackColor[] = {1.0f, 1.0f, 1.0f, 1};
 
-    for (int i = 0; i < 100; i++) {
-        for (int j = 0; j < 100; j++) {
-            glPushMatrix();
-            glTranslatef(-125.0f + i * 2.5f, -125.0f + j * 2.5f, 0);
-            // glRotatef(cameraAngleX, 1, 0, 0);
-            // glRotatef(cameraAngleY, 0, 1, 0);
-            // glRotatef(-90, 1, 0, 0);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            float zackColor[] = {float(i) / 100, float(j) / 100,
-                                 float(frame) * 0.01f, 1};
-            spheres[i * 10 + j].drawWithLines(zackColor);
-            glPopMatrix();
+    const int grid_size = 2;
+    // const int grid_size = 100;
+    const float dist_bet_spheres = 2.5f;
+    const float x_displacement = -((grid_size - 1) * dist_bet_spheres) / 2;
+    const float y_displacement = ((grid_size - 1) * dist_bet_spheres) / 2;
+
+    // float x[4][4] = {
+    //     {0.8392156862745098, 0.3686274509803922, 0.1843137254901961, 0.8549019607843137}, 
+    //     {0.5686274509803921, 0.6901960784313725, 0.01568627450980392, 0.8549019607843137}, 
+    //     {0.1568627450980392, 0.6235294117647059, 0.792156862745098, 0.8549019607843137}, 
+    //     {0.8784313725490196, 0.7137254901960784, 0.07450980392156863, 0.8549019607843137}};
+
+    float x[4][4] = {
+        { 1.0, 0.0, 0.0, 1.0 },
+        { 0.0, 1.0, 0.0, 1.0 },
+        { 0.0, 0.0, 1.0, 1.0 },
+        { 0.0, 0.0, 0.0, 1.0 },
+    };
+
+    int sphereIndex = 0;
+    for (int i = 0; i < grid_size; i++) {
+        for (int j = 0; j < grid_size; j++) {
+        glPushMatrix();
+        glTranslatef(x_displacement + j * dist_bet_spheres, y_displacement - i * dist_bet_spheres, 0);
+        // glRotatef(cameraAngleX, 1, 0, 0);
+        // glRotatef(cameraAngleY, 0, 1, 0);
+        // glRotatef(-90, 1, 0, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // float zackColor[] = {float(i) / 100, float(j) / 100,
+        //                         float(frame) * 0.01f, 1};
+        spheres[sphereIndex].draw(x[sphereIndex]);
+        // spheres[i * 10 + j].drawWithLines(zackColor);
+        glPopMatrix();
+        sphereIndex++;
         }
     }
 

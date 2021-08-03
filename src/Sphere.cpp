@@ -134,6 +134,27 @@ void Sphere::draw() const
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
+// draw with colour
+void Sphere::draw(const float color[4]) const
+{
+    glColor4fv(color);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
+
+    // interleaved array
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glVertexPointer(3, GL_FLOAT, interleavedStride, &interleavedVertices[0]);
+    glNormalPointer(GL_FLOAT, interleavedStride, &interleavedVertices[3]);
+    glTexCoordPointer(2, GL_FLOAT, interleavedStride, &interleavedVertices[6]);
+
+    glDrawElements(GL_TRIANGLES, (unsigned int)indices.size(), GL_UNSIGNED_INT, indices.data());
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,7 +165,7 @@ void Sphere::drawLines(const float lineColor[4]) const
 {
     // set line colour
     glColor4fv(lineColor);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE,   lineColor);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, lineColor);    //*lineColor: phong model
 
     // draw lines with VA
     glDisable(GL_LIGHTING);
