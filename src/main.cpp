@@ -73,6 +73,7 @@ int imageWidth;
 int imageHeight;
 
 int frame;
+int grid_size;
 
 // sphere: min sector = 3, min stack = 2
 Sphere sphere1(1.0f, 36, 18,
@@ -95,10 +96,20 @@ std::vector< float > LoadColors() {
     }
     string s;
     char buffer[MAX_BUFFER_SIZE];
+
+    bool firstLine = true;
     while ( myfile.getline(buffer, MAX_BUFFER_SIZE) )
     {
         stringstream ss(buffer);
         ss >> s;
+        
+        if (firstLine){ 
+            grid_size = stoi(s);
+            firstLine = false;
+
+            // cout << "grid size: " << grid_size << endl;
+            continue;
+        }
         completeRgbVector.push_back(std::stof(s));
     }
 
@@ -467,8 +478,7 @@ void displayCB() {
 
     // tramsform modelview matrix
     //ANCHOR: CAMERA DISTANCE
-    glTranslatef(0, 0, -20);
-    // glTranslatef(0, 0, -cameraDistance);
+    glTranslatef(0, 0, -cameraDistance);
 
     // set material
     float ambient[] = {0.5f, 0.5f, 0.5f, 1};
@@ -515,20 +525,18 @@ void displayCB() {
 
     // float zackColor[] = {1.0f, 1.0f, 1.0f, 1};
 
-    const int grid_size = 2;
-    // const int grid_size = 100;
     const float dist_bet_spheres = 2.5f;
     const float x_displacement = -((grid_size - 1) * dist_bet_spheres) / 2;
     const float y_displacement = ((grid_size - 1) * dist_bet_spheres) / 2;
 
-    std::vector< float > rgbVector = LoadColors();
+    std::vector< float > rgbaVector = LoadColors();
 
     int sphereIndex = 0;
     for (int i = 0; i < grid_size; i++) {
         for (int j = 0; j < grid_size; j++) {
             int firstIdx = sphereIndex*4;
-            float pixelRgb[4] = {rgbVector[firstIdx], rgbVector[firstIdx+1], rgbVector[firstIdx+2], rgbVector[firstIdx+3]};
-            cout << "Sphere " << sphereIndex <<": " << rgbVector[firstIdx] << " " << rgbVector[firstIdx+1] << " " << rgbVector[firstIdx+2] << " " << rgbVector[firstIdx+3] << endl;
+            float pixelRgb[4] = {rgbaVector[firstIdx], rgbaVector[firstIdx+1], rgbaVector[firstIdx+2], rgbaVector[firstIdx+3]};
+            // cout << "Sphere " << sphereIndex <<": " << rgbaVector[firstIdx] << " " << rgbaVector[firstIdx+1] << " " << rgbaVector[firstIdx+2] << " " << rgbaVector[firstIdx+3] << endl;
 
             glPushMatrix();
             glTranslatef(x_displacement + j * dist_bet_spheres, y_displacement - i * dist_bet_spheres, 0);
