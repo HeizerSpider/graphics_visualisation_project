@@ -6,15 +6,17 @@ n = len(sys.argv)
 print("Total arguments passed:", n)
 
 size = 10
-if (n > 1):
+if (n == 2):
     size = int(sys.argv[1])
-
-image_filename = "windows.png"
+    image_filename = "windows.png"
+elif (n == 3):
+    size = int(sys.argv[1])
+    image_filename = sys.argv[2]
 
 print("Reading", image_filename)
 print("Size: {}x{}".format(size,size))
 
-im = Image.open("windows.png", "r")
+im = Image.open(image_filename, "r")
 px = list(im.getdata())
 
 compressed = im.resize((size,size),Image.ANTIALIAS)

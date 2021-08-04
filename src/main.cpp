@@ -81,29 +81,27 @@ Sphere sphere1(1.0f, 36, 18,
 Sphere sphere2(1.0f, 36, 18);  // radius, sectors, stacks, smooth(default)
 // Sphere sphere3(1.0f, 36, 18);
 
-Sphere *spheres = new Sphere[10000];
+// Sphere *spheres = new Sphere[10000];
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::vector< float > LoadColors() {
-    std::vector< float > completeRgbVector;
+std::vector<float> LoadColors() {
+    std::vector<float> completeRgbVector;
 
     std::ifstream myfile("../rgba.txt");
-    if (myfile.is_open() == false)
-    {
-        std::cout << "Error: cannot open the file."; 
+    if (myfile.is_open() == false) {
+        std::cout << "Error: cannot open the file.";
         return completeRgbVector;
     }
     string s;
     char buffer[MAX_BUFFER_SIZE];
 
     bool firstLine = true;
-    while ( myfile.getline(buffer, MAX_BUFFER_SIZE) )
-    {
+    while (myfile.getline(buffer, MAX_BUFFER_SIZE)) {
         stringstream ss(buffer);
         ss >> s;
-        
-        if (firstLine){ 
+
+        if (firstLine) {
             grid_size = stoi(s);
             firstLine = false;
 
@@ -115,7 +113,6 @@ std::vector< float > LoadColors() {
 
     return completeRgbVector;
 }
-
 
 int main(int argc, char **argv) {
     // init global vars
@@ -477,7 +474,7 @@ void displayCB() {
     glPushMatrix();
 
     // tramsform modelview matrix
-    //ANCHOR: CAMERA DISTANCE
+    // ANCHOR: CAMERA DISTANCE
     glTranslatef(0, 0, -cameraDistance);
 
     // set material
@@ -525,27 +522,34 @@ void displayCB() {
 
     // float zackColor[] = {1.0f, 1.0f, 1.0f, 1};
 
+    std::vector<float> rgbaVector = LoadColors();
+
+    Sphere *spheres = new Sphere[grid_size * grid_size];
     const float dist_bet_spheres = 2.5f;
     const float x_displacement = -((grid_size - 1) * dist_bet_spheres) / 2;
     const float y_displacement = ((grid_size - 1) * dist_bet_spheres) / 2;
 
-    std::vector< float > rgbaVector = LoadColors();
-
     int sphereIndex = 0;
     for (int i = 0; i < grid_size; i++) {
         for (int j = 0; j < grid_size; j++) {
-            int firstIdx = sphereIndex*4;
-            float pixelRgb[4] = {rgbaVector[firstIdx], rgbaVector[firstIdx+1], rgbaVector[firstIdx+2], rgbaVector[firstIdx+3]};
-            // cout << "Sphere " << sphereIndex <<": " << rgbaVector[firstIdx] << " " << rgbaVector[firstIdx+1] << " " << rgbaVector[firstIdx+2] << " " << rgbaVector[firstIdx+3] << endl;
+            int firstIdx = sphereIndex * 4;
+            float pixelRgb[4] = {rgbaVector[firstIdx], rgbaVector[firstIdx + 1],
+                                 rgbaVector[firstIdx + 2],
+                                 rgbaVector[firstIdx + 3]};
+            // cout << "Sphere " << sphereIndex <<": " << rgbaVector[firstIdx]
+            // << " " << rgbaVector[firstIdx+1] << " " << rgbaVector[firstIdx+2]
+            // << " " << rgbaVector[firstIdx+3] << endl;
 
             glPushMatrix();
-            glTranslatef(x_displacement + j * dist_bet_spheres, y_displacement - i * dist_bet_spheres, 0);
+            glTranslatef(x_displacement + j * dist_bet_spheres,
+                         y_displacement - i * dist_bet_spheres, 0);
             // glRotatef(cameraAngleX, 1, 0, 0);
             // glRotatef(cameraAngleY, 0, 1, 0);
             // glRotatef(-90, 1, 0, 0);
             glBindTexture(GL_TEXTURE_2D, 0);
 
-            // float zackColor[] = {float(i) / 100, float(j) / 100, float(frame) * 0.01f, 1};
+            // float zackColor[] = {float(i) / 100, float(j) / 100, float(frame)
+            // * 0.01f, 1};
             spheres[sphereIndex].draw(pixelRgb);
             glPopMatrix();
             sphereIndex++;
