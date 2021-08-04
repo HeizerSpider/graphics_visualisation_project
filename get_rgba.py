@@ -1,17 +1,25 @@
 import sys
+import os
+import argparse
+from sys import platform
 from PIL import Image
 
-# total arguments
-n = len(sys.argv)
-print("Total arguments passed:", n)
+def parseArguments():
+    # Create argument parser
+    parser = argparse.ArgumentParser()
+    # Positional mandatory arguments
+    parser.add_argument("size", help="display grid size", type=int)
+    # Optional arguments
+    parser.add_argument("-p", "--file", help="filepath", type=str, default="resources/windows.png")
+    # Parse arguments
+    args = parser.parse_args()
+    return args
 
-size = 10
-if (n == 2):
-    size = int(sys.argv[1])
-    image_filename = "windows.png"
-elif (n == 3):
-    size = int(sys.argv[1])
-    image_filename = sys.argv[2]
+args = parseArguments()
+
+# total arguments
+size = args.size
+image_filename = args.file
 
 print("Reading", image_filename)
 print("Size: {}x{}".format(size,size))
@@ -41,3 +49,9 @@ file1.write(str(size)+'\n')
 file1.writelines(converted)
 file1.close()
 
+if platform == "linux":
+    os.system("cd src/ && make -f Makefile.linux && ./../bin/sphere")
+elif platform == "darwin":
+    os.system("cd src/ && make -f Makefile.mac && ./../bin/sphere")
+elif platform == "win32":
+    os.system("cd src/ && make -f Makefile.windows && ./../bin/sphere")
