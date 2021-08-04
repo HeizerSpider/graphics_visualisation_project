@@ -24,6 +24,7 @@ image_filename = args.file
 print("Reading", image_filename)
 print("Size: {}x{}".format(size,size))
 
+# Get RGBA from image file
 im = Image.open(image_filename, "r")
 px = list(im.getdata())
 
