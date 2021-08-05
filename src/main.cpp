@@ -26,7 +26,7 @@
 
 using namespace std;
 
-#define MAX_BUFFER_SIZE            1024
+#define MAX_BUFFER_SIZE 1024
 
 // GLUT CALLBACK functions
 void displayCB();
@@ -81,7 +81,9 @@ Sphere sphere1(1.0f, 36, 18,
 Sphere sphere2(1.0f, 36, 18);  // radius, sectors, stacks, smooth(default)
 // Sphere sphere3(1.0f, 36, 18);
 
-// Sphere *spheres = new Sphere[10000];
+// Need to call it here - since recreating spheres in the render is intensive
+// Limit is 100 x 100 now.
+Sphere *spheres = new Sphere[10000];
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -524,7 +526,6 @@ void displayCB() {
 
     std::vector<float> rgbaVector = LoadColors();
 
-    Sphere *spheres = new Sphere[grid_size * grid_size];
     const float dist_bet_spheres = 2.5f;
     const float x_displacement = -((grid_size - 1) * dist_bet_spheres) / 2;
     const float y_displacement = ((grid_size - 1) * dist_bet_spheres) / 2;
