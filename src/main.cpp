@@ -81,10 +81,6 @@ Sphere sphere1(1.0f, 36, 18,
 Sphere sphere2(1.0f, 36, 18);  // radius, sectors, stacks, smooth(default)
 // Sphere sphere3(1.0f, 36, 18);
 
-// Need to call it here - since recreating spheres in the render is intensive
-// Limit is 100 x 100 now.
-Sphere *spheres = new Sphere[10000];
-
 ///////////////////////////////////////////////////////////////////////////////
 
 std::vector<float> LoadColors() {
@@ -115,6 +111,12 @@ std::vector<float> LoadColors() {
 
     return completeRgbVector;
 }
+
+// Need to call it here - since recreating spheres in the render is intensive
+std::vector<float> rgbaVector = LoadColors();
+Sphere *spheres = new Sphere[grid_size * grid_size];
+
+/////////////
 
 int main(int argc, char **argv) {
     // init global vars
@@ -523,8 +525,6 @@ void displayCB() {
     // glPopMatrix();
 
     // float zackColor[] = {1.0f, 1.0f, 1.0f, 1};
-
-    std::vector<float> rgbaVector = LoadColors();
 
     const float dist_bet_spheres = 2.5f;
     const float x_displacement = -((grid_size - 1) * dist_bet_spheres) / 2;
