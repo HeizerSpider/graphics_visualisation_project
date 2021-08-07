@@ -72,6 +72,14 @@ GLuint texId;
 int imageWidth;
 int imageHeight;
 
+float cameraPositionX;
+float cameraPositionY;
+float cameraPositionZ;
+
+float cameraAngleZ;
+
+const float cameraSpeed = 0.05f;
+
 int frame;
 int grid_size;
 
@@ -255,6 +263,12 @@ bool initSharedMem() {
     mouseX = mouseY = 0;
 
     cameraAngleX = cameraAngleY = 0.0f;
+
+    cameraAngleZ = 0.0f;
+
+    cameraPositionX = cameraPositionY = 0.0f;
+    cameraPositionZ = CAMERA_DISTANCE;
+
     cameraDistance = CAMERA_DISTANCE;
 
     drawMode = 0;  // 0:fill, 1: wireframe, 2:points
@@ -479,7 +493,11 @@ void displayCB() {
 
     // tramsform modelview matrix
     // ANCHOR: CAMERA DISTANCE
-    glTranslatef(0, 0, -cameraDistance);
+
+    // glTranslatef(0, 0, -cameraDistance);
+
+    setCamera(cameraPositionX, cameraPositionY, cameraPositionZ, cameraAngleX,
+              cameraAngleY, cameraAngleZ);
 
     // set material
     float ambient[] = {0.5f, 0.5f, 0.5f, 1};
@@ -560,10 +578,10 @@ void displayCB() {
     /*
     // using GLU quadric object
     GLUquadricObj* obj = gluNewQuadric();
-    gluQuadricDrawStyle(obj, GLU_FILL); // GLU_FILL, GLU_LINE, GLU_SILHOUETTE,
-    GLU_POINT gluQuadricNormals(obj, GL_SMOOTH); gluQuadricTexture(obj,
-    GL_TRUE); glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+    gluQuadricDrawStyle(obj, GLU_FILL); // GLU_FILL, GLU_LINE,
+    GLU_SILHOUETTE, GLU_POINT gluQuadricNormals(obj, GL_SMOOTH);
+    gluQuadricTexture(obj, GL_TRUE); glTexGeni(GL_S, GL_TEXTURE_GEN_MODE,
+    GL_SPHERE_MAP); glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
     gluSphere(obj, 2.0, 50, 50); // radius, slice, stack
     */
 
@@ -614,6 +632,25 @@ void keyboardCB(unsigned char key, int x, int y) {
             //     ++frame;
             //     frame %= 100;
             //     break;
+
+        case 'w':
+            cameraPositionX += cameraSpeed * cameraAngleX;
+            cameraPositionY += cameraSpeed * cameraAngleY;
+            cameraPositionZ += cameraSpeed * cameraAngleZ;
+            break;
+
+            // cameraPos += cameraSpeed * cameraFront;
+            // case 's':
+            //     cameraPos -= cameraSpeed * cameraFront;
+            // case 'a':
+            //     cameraPos -=
+            //         glm::normalize(glm::cross(cameraFront, cameraUp)) *
+            //         cameraSpeed;
+            //
+            // case 'd':
+            //     cameraPos +=
+            //         glm::normalize(glm::cross(cameraFront, cameraUp)) *
+            //         cameraSpeed;
 
         case 'd':  // switch rendering modes (fill -> wire -> point)
         case 'D':
@@ -669,13 +706,34 @@ void mouseCB(int button, int state, int x, int y) {
 
 void mouseMotionCB(int x, int y) {
     if (mouseLeftDown) {
-        cameraAngleY += (x - mouseX);
-        cameraAngleX += (y - mouseY);
+        // cameraAngleY += (x - mouseX);
+        // cameraAngleX += (y - mouseY);
+        cameraAngleX += (x - mouseX);
+        cameraAngleY -= (y - mouseY);
         mouseX = x;
         mouseY = y;
     }
-    if (mouseRightDown) {
-        cameraDistance -= (y - mouseY) * 0.2f;
-        mouseY = y;
-    }
+    // if (mouseRightDown) {
+    //     cameraPositionZ -= (y - mouseY) * 0.2f;
+    //     mouseY = y;
+    // }
+
+    // glm::vec3 direction;
+    // direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    // direction.y = sin(glm::radians(pitch));
+    // direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    // cameraFront = glm::normalize(direction);
 }
+
+// void mouseMotionCB(int x, int y) {
+//     if (mouseLeftDown) {
+//         cameraAngleY += (x - mouseX);
+//         cameraAngleX += (y - mouseY);
+//         mouseX = x;
+//         mouseY = y;
+//     }
+//     if (mouseRightDown) {
+//         cameraDistance -= (y - mouseY) * 0.2f;
+//         mouseY = y;
+//     }
+// }
