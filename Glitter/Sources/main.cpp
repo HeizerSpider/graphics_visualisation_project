@@ -11,6 +11,7 @@
 #include <learnopengl/camera.h>
 
 #include <iostream>
+#include <vector>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -22,7 +23,8 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(50.0f, 50.0f, 50.0f));
+// Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -30,6 +32,40 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;  // time between current frame and last frame
 float lastFrame = 0.0f;
+
+int grid_size;
+#define MAX_BUFFER_SIZE 1024
+std::vector<float> LoadColors() {
+    std::vector<float> completeRgbVector;
+
+    std::ifstream myfile("../../rgba.txt");
+    if (myfile.is_open() == false) {
+        std::cout << "Error: cannot open the file.";
+        return completeRgbVector;
+    }
+    std::string s;
+    char buffer[MAX_BUFFER_SIZE];
+
+    bool firstLine = true;
+    while (myfile.getline(buffer, MAX_BUFFER_SIZE)) {
+        std::stringstream ss(buffer);
+        ss >> s;
+
+        if (firstLine) {
+            grid_size = stoi(s);
+            firstLine = false;
+
+            // cout << "grid size: " << grid_size << endl;
+            continue;
+        }
+        completeRgbVector.push_back(std::stof(s));
+    }
+
+    return completeRgbVector;
+}
+
+// Need to call it here - since recreating spheres in the render is intensive
+std::vector<float> rgbaVector = LoadColors();
 
 int main() {
     // glfw: initialize and configure
@@ -109,10 +145,10 @@ int main() {
     //         glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
     //         glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
 
-    glm::vec3 cubePositions[10][10];
-    for (unsigned int i = 0; i < 10; i++) {
+    glm::vec3 cubePositions[grid_size][grid_size];
+    for (unsigned int i = 0; i < grid_size; i++) {
         float x = i * 1.0f;
-        for (unsigned int j = 0; j < 10; j++) {
+        for (unsigned int j = 0; j < grid_size; j++) {
             float y = j * 1.0f;
             cubePositions[i][j] = glm::vec3(x, y, 0.0f);
         }
@@ -168,8 +204,10 @@ int main() {
 
         // render boxes
         glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < 10; i++) {
-            for (unsigned int j = 0; j < 10; j++) {
+
+        int sphereIndex = 0;
+        for (unsigned int i = 0; i < grid_size; i++) {
+            for (unsigned int j = 0; j < grid_size; j++) {
                 // calculate the model matrix for each object and pass it to
                 // shader before drawing
                 glm::mat4 model =
@@ -180,7 +218,15 @@ int main() {
                 // model = glm::rotate(model, glm::radians(angle),
                 //                     glm::vec3(1.0f, 0.3f, 0.5f));
 
-                glm::vec4 color = glm::vec4(i / 10.0f, j / 10.0f, 0.4f, 1.0f);
+                int firstIdx = sphereIndex * 4;
+                float pixelRgb[4] = {
+                    rgbaVector[firstIdx], rgbaVector[firstIdx + 1],
+                    rgbaVector[firstIdx + 2], rgbaVector[firstIdx + 3]};
+
+                glm::vec4 color = glm::vec4(pixelRgb[0], pixelRgb[1],
+                                            pixelRgb[2], pixelRgb[3]);
+                // glm::vec4 color = glm::vec4(i / 10.0f, j / 10.0f,
+                // 0.4f, 1.0f);
                 ourShader.setVec4("ourColor", color);
                 ourShader.setMat4("model", model);
 
@@ -191,6 +237,7 @@ int main() {
                 // 0.0f, 1.0f);
 
                 glDrawArrays(GL_TRIANGLES, 0, 36);
+                sphereIndex++;
             }
         }
 

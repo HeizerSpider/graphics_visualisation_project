@@ -5,6 +5,16 @@ git clone --recursive https://github.com/HeizerSpider/graphics_visualisation_pro
 
 Make sure to pass the `--recursive` flag to grab all the dependencies. If you forgot, then you can `git submodule update --init` instead.
 
+### Run application directly
+``` sh
+python3 display.py 50
+```
+
+``` sh
+python3 display.py 50 -p resources/test.png
+```
+
+### Build cpp
 ``` sh
 cd graphics_visualisation_project
 cd build
