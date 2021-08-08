@@ -49,4 +49,4 @@ file1.write(str(size)+'\n')
 file1.writelines(converted)
 file1.close()
 
-os.system("cd build && make && cd Display_Matrix && ./Display_Matrix")
+os.system("cd build && cmake .. && make -j8 && cd Display_Matrix && ./Display_Matrix")

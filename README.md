@@ -9,7 +9,7 @@ Make sure to pass the `--recursive` flag to grab all the dependencies. If you fo
 cd graphics_visualisation_project
 cd build
 cmake ..
-make 
+make -j8
 cd Display_Matrix
 ./Display_Matrix
 ```
