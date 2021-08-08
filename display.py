@@ -1,7 +1,6 @@
 import sys
 import os
 import argparse
-from sys import platform
 from PIL import Image
 
 def parseArguments():
@@ -50,9 +49,4 @@ file1.write(str(size)+'\n')
 file1.writelines(converted)
 file1.close()
 
-if platform == "linux":
-    os.system("cd src/ && make -f Makefile.linux && ./../bin/sphere")
-elif platform == "darwin":
-    os.system("cd src/ && make -f Makefile.mac && ./../bin/sphere")
-elif platform == "win32":
-    os.system("cd src/ && make -f Makefile.windows && ./../bin/sphere")
+os.system("cd build && make && cd Display_Matrix && ./Display_Matrix")

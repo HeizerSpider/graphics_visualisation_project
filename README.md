@@ -1,24 +1,16 @@
-### Run application directly
+## Getting started 
 ``` sh
-python3 display.py 100
+git clone --recursive https://github.com/HeizerSpider/graphics_visualisation_project.git 
 ```
+
+Make sure to pass the `--recursive` flag to grab all the dependencies. If you forgot, then you can `git submodule update --init` instead.
 
 ``` sh
-python3 display.py 100 -p resources/test.png
+cd graphics_visualisation_project
+cd build
+cmake ..
+make 
+cd Display_Matrix
+./Display_Matrix
 ```
 
-### C++ internals
-
-##### Build
-```sh
-cd src
-# change mac to windows/linux depending on your OS
-make -f Makefile.mac clean
-make -f Makefile.mac
-```
-
-##### Run
-```sh
-cd bin
-./sphere # for mac and linux, for windows just run .exec file
-```
