@@ -23,7 +23,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(50.0f, 50.0f, 100.0f));
+Camera camera(glm::vec3(50.0f, 75.0f, 30.0f));
 // Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -146,13 +146,13 @@ int main() {
     //         glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
 
     glm::vec3 cubePositions[grid_size][grid_size];
-    for (unsigned int i = 0; i < grid_size; i++) {
-        float x = i * 1.0f;
-        for (unsigned int j = 0; j < grid_size; j++) {
-            float y = j * 1.0f;
-            cubePositions[i][j] = glm::vec3(x, y, 0.0f);
-        }
-    }
+    // for (unsigned int i = 0; i < grid_size; i++) {
+    //     float x = i * 1.0f;
+    //     for (unsigned int j = 0; j < grid_size; j++) {
+    //         float y = j * 1.0f;
+    //         cubePositions[i][j] = glm::vec3(x, y, 0.0f);
+    //     }
+    // }
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -204,6 +204,17 @@ int main() {
 
         // render boxes
         glBindVertexArray(VAO);
+
+        for (unsigned int i = 0; i < grid_size; i++) {
+            float x = i * 1.0f;
+            for (unsigned int j = 0; j < grid_size; j++) {
+                float y = j * 1.0f;
+
+                float depthValue = 1.5 * sin(glfwGetTime() * 2 + i * 100);
+
+                cubePositions[i][j] = glm::vec3(x, y, depthValue);
+            }
+        }
 
         int sphereIndex = 0;
         for (unsigned int i = 0; i < grid_size; i++) {
