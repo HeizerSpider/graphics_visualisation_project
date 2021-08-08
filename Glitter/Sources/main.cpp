@@ -13,6 +13,9 @@
 #include <iostream>
 #include <vector>
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -23,7 +26,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(50.0f, 75.0f, 30.0f));
+Camera camera(glm::vec3(30.0f, 0.0f, 100.0f));
 // Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -170,6 +173,13 @@ int main() {
 
     ourShader.use();
 
+    // std::string filename = "bad-apple-resized.mp4";
+    std::string filename = "bad-apple-resized-short.mp4";
+    cv::VideoCapture capture(filename);
+    cv::Mat frame;
+
+    if (!capture.isOpened()) throw "Error when reading steam_avi";
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window)) {
@@ -206,49 +216,94 @@ int main() {
         glBindVertexArray(VAO);
 
         for (unsigned int i = 0; i < grid_size; i++) {
-            float x = i * 1.0f;
+            float y = i * -1.0f;
             for (unsigned int j = 0; j < grid_size; j++) {
-                float y = j * 1.0f;
+                float x = j * 1.0f;
 
-                float depthValue = 1.5 * sin(glfwGetTime() * 2 + i * 100);
+                float depthValue = 1.5 * sin(glfwGetTime() * 2 + j * 100);
 
                 cubePositions[i][j] = glm::vec3(x, y, depthValue);
             }
         }
 
-        int sphereIndex = 0;
-        for (unsigned int i = 0; i < grid_size; i++) {
-            for (unsigned int j = 0; j < grid_size; j++) {
-                // calculate the model matrix for each object and pass it to
-                // shader before drawing
-                glm::mat4 model =
-                    glm::mat4(1.0f);  // make sure to initialize matrix to
-                                      // identity matrix first
-                model = glm::translate(model, cubePositions[i][j]);
-                // float angle = 20.0f * i;
-                // model = glm::rotate(model, glm::radians(angle),
-                //                     glm::vec3(1.0f, 0.3f, 0.5f));
+        capture >> frame;
+        if (!frame.empty()) {
+            int sphereIndex = 0;
+            for (unsigned int i = 0; i < grid_size; i++) {
+                for (unsigned int j = 0; j < grid_size; j++) {
+                    // calculate the model matrix for each object and pass it to
+                    // shader before drawing
+                    glm::mat4 model =
+                        glm::mat4(1.0f);  // make sure to initialize matrix to
+                                          // identity matrix first
+                    model = glm::translate(model, cubePositions[i][j]);
+                    // float angle = 20.0f * i;
+                    // model = glm::rotate(model, glm::radians(angle),
+                    //                     glm::vec3(1.0f, 0.3f, 0.5f));
 
-                int firstIdx = sphereIndex * 4;
-                float pixelRgb[4] = {
-                    rgbaVector[firstIdx], rgbaVector[firstIdx + 1],
-                    rgbaVector[firstIdx + 2], rgbaVector[firstIdx + 3]};
+                    int firstIdx = sphereIndex * 4;
+                    float pixelRgb[4] = {
+                        rgbaVector[firstIdx], rgbaVector[firstIdx + 1],
+                        rgbaVector[firstIdx + 2], rgbaVector[firstIdx + 3]};
 
-                glm::vec4 color = glm::vec4(pixelRgb[0], pixelRgb[1],
-                                            pixelRgb[2], pixelRgb[3]);
-                // glm::vec4 color = glm::vec4(i / 10.0f, j / 10.0f,
-                // 0.4f, 1.0f);
-                ourShader.setVec4("ourColor", color);
-                ourShader.setMat4("model", model);
+                    float blue = frame.at<cv::Vec3b>(i, j)[0];
+                    float green = frame.at<cv::Vec3b>(i, j)[1];
+                    float red = frame.at<cv::Vec3b>(i, j)[2];
 
-                // float greenValue = i / 100.0f;
-                // int vertexColorLocation =
-                //     glGetUniformLocation(shaderProgram, "ourColor");
-                // glUniform4f(vertexColorLocation, 0.0f, greenValue,
-                // 0.0f, 1.0f);
+                    glm::vec4 color = glm::vec4(red, green, blue, 1.0f);
 
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-                sphereIndex++;
+                    // glm::vec4 color = glm::vec4(pixelRgb[0], pixelRgb[1],
+                    //                             pixelRgb[2], pixelRgb[3]);
+                    // glm::vec4 color = glm::vec4(i / 10.0f, j / 10.0f,
+                    // 0.4f, 1.0f);
+                    ourShader.setVec4("ourColor", color);
+                    ourShader.setMat4("model", model);
+
+                    // float greenValue = i / 100.0f;
+                    // int vertexColorLocation =
+                    //     glGetUniformLocation(shaderProgram, "ourColor");
+                    // glUniform4f(vertexColorLocation, 0.0f, greenValue,
+                    // 0.0f, 1.0f);
+
+                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                    sphereIndex++;
+                }
+            }
+        } else {
+            int sphereIndex = 0;
+            for (unsigned int i = 0; i < grid_size; i++) {
+                for (unsigned int j = 0; j < grid_size; j++) {
+                    // calculate the model matrix for each object and pass it to
+                    // shader before drawing
+                    glm::mat4 model =
+                        glm::mat4(1.0f);  // make sure to initialize matrix to
+                                          // identity matrix first
+                    model = glm::translate(model, cubePositions[i][j]);
+                    // float angle = 20.0f * i;
+                    // model = glm::rotate(model, glm::radians(angle),
+                    //                     glm::vec3(1.0f, 0.3f, 0.5f));
+
+                    int firstIdx = sphereIndex * 4;
+                    float pixelRgb[4] = {
+                        rgbaVector[firstIdx], rgbaVector[firstIdx + 1],
+                        rgbaVector[firstIdx + 2], rgbaVector[firstIdx + 3]};
+
+                    glm::vec4 color = glm::vec4(pixelRgb[0], pixelRgb[1],
+                                                pixelRgb[2], pixelRgb[3]);
+                    // glm::vec4 color = glm::vec4(i / 10.0f, j / 10.0f,
+                    // 0.4f, 1.0f);
+                    ourShader.setVec4("ourColor", color);
+                    ourShader.setMat4("model", model);
+
+                    // float greenValue = i / 100.0f;
+                    // int vertexColorLocation =
+                    //     glGetUniformLocation(shaderProgram, "ourColor");
+                    // glUniform4f(vertexColorLocation, 0.0f, greenValue,
+                    // 0.0f, 1.0f);
+
+                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                    sphereIndex++;
+                }
             }
         }
 
