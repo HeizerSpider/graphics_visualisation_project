@@ -58,6 +58,8 @@ if mimestart == "image":
         # converted.append(norm)
         converted.append(tuple_to_string(norm))
     file1.writelines(converted)
+if mimestart == "video":
+    file1.write(file_path.split('/')[1])
 
 file1.close()
 

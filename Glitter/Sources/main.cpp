@@ -38,6 +38,7 @@ float lastFrame = 0.0f;
 
 int grid_size;
 bool is_video = false;
+std::string filename = "bad-apple-resized-short.mp4";
 
 #define MAX_BUFFER_SIZE 1024
 
@@ -67,6 +68,11 @@ std::vector<float> LoadColors() {
         } else if (secondLine) {
             if (s == "video") {
                 is_video = true;
+
+                myfile.getline(buffer, MAX_BUFFER_SIZE);
+                std::stringstream ss(buffer);
+                ss >> s;
+                filename = s;
                 return completeRgbVector;
             }
             secondLine = false;
@@ -82,6 +88,7 @@ std::vector<float> LoadColors() {
 std::vector<float> rgbaVector = LoadColors();
 
 int main() {
+    std::cout << filename;
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -185,7 +192,7 @@ int main() {
     ourShader.use();
 
     // std::string filename = "bad-apple-resized.mp4";
-    std::string filename = "bad-apple-resized-short.mp4";
+    // std::string filename = "bad-apple-resized-short.mp4";
     cv::VideoCapture capture(filename);
     cv::Mat frame;
 
@@ -320,13 +327,13 @@ void processInput(GLFWwindow* window) {
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        camera.ProcessKeyboard(FORWARD, deltaTime * 20);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        camera.ProcessKeyboard(BACKWARD, deltaTime * 20);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        camera.ProcessKeyboard(LEFT, deltaTime * 20);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        camera.ProcessKeyboard(RIGHT, deltaTime * 20);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
