@@ -82,7 +82,6 @@ std::vector<float> LoadColors() {
 std::vector<float> rgbaVector = LoadColors();
 
 int main() {
-    std::cout << grid_size << " " << is_video;
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -238,8 +237,8 @@ int main() {
             }
         }
 
-        capture >> frame;
         if (is_video == true) {
+            capture >> frame;
             if (!frame.empty()) {
                 for (unsigned int i = 0; i < grid_size; i++) {
                     for (unsigned int j = 0; j < grid_size; j++) {
