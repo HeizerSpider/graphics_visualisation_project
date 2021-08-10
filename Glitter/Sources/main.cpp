@@ -24,6 +24,7 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+int depth = 1;
 
 // camera
 Camera camera(glm::vec3(30.0f, 0.0f, 100.0f));
@@ -293,7 +294,18 @@ int main() {
             for (unsigned int j = 0; j < grid_size; j++) {
                 float x = j * 1.0f;
 
-                float depthValue = 1.5 * sin(glfwGetTime() * 2 + j * 100);
+                
+                // std::cout<<depth;
+                float depthValue = 0;
+                if(depth == 0){
+                    depthValue = 1.5 * sin(glfwGetTime() * 2 + j * 100);
+                }else if (depth ==1){
+                    depthValue = rgbaVector[4*(i*100+j)]*10; 
+                }else if (depth ==2){
+                    depthValue = rgbaVector[4*(i*100+j)+1]*10; 
+                }else if (depth ==3){
+                    depthValue = rgbaVector[4*(i*100+j)+2]*10; 
+                }
 
                 cubePositions[i][j] = glm::vec3(x, y, depthValue);
             }
@@ -389,6 +401,16 @@ void processInput(GLFWwindow* window) {
         camera.ProcessKeyboard(LEFT, deltaTime * 20);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime * 20);
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+        depth -= 1;
+        if (depth == -1){
+            depth = 3;
+        }
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+        depth += 1;
+        if (depth == 4){
+            depth = 0;
+        }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
