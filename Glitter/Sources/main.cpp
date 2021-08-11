@@ -24,6 +24,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action,
                            int mods);
 void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void key_callback(GLFWwindow* window, int key, int scancode, int action,
+                  int mods);
 void processInput(GLFWwindow* window);
 
 // settings
@@ -48,6 +50,7 @@ float startRipple;
 const double PI = std::atan(1.0) * 4;
 
 unsigned int effect_num = 0;
+bool transparent = false;
 int grid_size;
 
 bool is_video = false;
@@ -261,6 +264,7 @@ int main() {
         // input
         // -----
         processInput(window);
+        glfwSetKeyCallback(window, key_callback);
 
         // render
         // ------
@@ -432,12 +436,18 @@ int main() {
                     glm::vec4 color = mappedColors[i][j];
 
                     // only render if alpha > 0
-                    // if (!color[3]==0) {
-                    ourShader.setVec4("ourColor", color);
-                    ourShader.setMat4("model", model);
+                    if (color[3] == 0) {
+                        if (!transparent) {
+                            ourShader.setVec4("ourColor", color);
+                            ourShader.setMat4("model", model);
+                            glDrawArrays(GL_TRIANGLES, 0, 36);
+                        }
+                    } else {
+                        ourShader.setVec4("ourColor", color);
+                        ourShader.setMat4("model", model);
 
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
-                    // }
+                        glDrawArrays(GL_TRIANGLES, 0, 36);
+                    }
                     sphereIndex++;
                 }
             }
@@ -459,6 +469,12 @@ int main() {
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action,
+                  int mods) {
+    if (action == GLFW_RELEASE) return;  // only handle press events
+    if (key == GLFW_KEY_T) transparent = !transparent;
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this
@@ -489,7 +505,7 @@ void processInput(GLFWwindow* window) {
         startRipple = glfwGetTime();
         displayMode = 6;
     }
-    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
         startRipple = glfwGetTime();
         displayMode = 7;
     }
