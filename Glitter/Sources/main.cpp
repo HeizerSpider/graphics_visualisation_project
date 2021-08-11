@@ -474,7 +474,40 @@ int main() {
 void key_callback(GLFWwindow* window, int key, int scancode, int action,
                   int mods) {
     if (action == GLFW_RELEASE) return;  // only handle press events
+
+    // Toggle Transparency
     if (key == GLFW_KEY_T) transparent = !transparent;
+    // Change Effect
+    if (key == GLFW_KEY_I) displayMode = (displayMode + 4) % 5;
+    if (key == GLFW_KEY_O) displayMode = (displayMode + 1) % 5;
+
+    if (key == GLFW_KEY_0) displayMode = 0;
+    if (key == GLFW_KEY_1) displayMode = 1;
+    if (key == GLFW_KEY_2) displayMode = 2;
+    if (key == GLFW_KEY_3) displayMode = 3;
+    if (key == GLFW_KEY_4) displayMode = 4;
+
+    if (key == GLFW_KEY_5) {
+        startRipple = glfwGetTime();
+        displayMode = 5;
+    }
+    if (key == GLFW_KEY_R) {
+        startRipple = glfwGetTime();
+        displayMode = 6;
+    }
+    if (key == GLFW_KEY_E) {
+        startRipple = glfwGetTime();
+        displayMode = 7;
+    }
+    if (key == GLFW_KEY_F) {
+        startRipple = glfwGetTime();
+        displayMode = 8;
+    }
+    if (key == GLFW_KEY_G) {
+        startRipple = glfwGetTime();
+        displayMode = 9;
+    }
+
     std::cout << "displayMode: " << displayMode << std::endl;
 }
 
@@ -492,38 +525,6 @@ void processInput(GLFWwindow* window) {
         camera.ProcessKeyboard(LEFT, deltaTime * camera_speed);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime * camera_speed);
-    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) displayMode = 0;
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) displayMode = 1;
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) displayMode = 2;
-    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) displayMode = 3;
-    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) displayMode = 4;
-    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
-        startRipple = glfwGetTime();
-        displayMode = 5;
-    }
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        startRipple = glfwGetTime();
-        displayMode = 6;
-    }
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
-        startRipple = glfwGetTime();
-        displayMode = 7;
-    }
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
-        startRipple = glfwGetTime();
-        displayMode = 8;
-    }
-    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
-        startRipple = glfwGetTime();
-        displayMode = 9;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
-        displayMode = (displayMode - 1) % 5;
-    }
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
-        displayMode = (displayMode + 1) % 5;
-    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
