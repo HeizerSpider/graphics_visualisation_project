@@ -302,7 +302,7 @@ int main() {
 
                 if (glfwGetTime() > distFromCentre/maxDistFromCentre * 10) {
                     // depthValue = 15 * cos(glfwGetTime() + distFromCentre * PI);
-                    depthValue = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * glfwGetTime()) * cos(glfwGetTime() + distFromCentre * PI);
+                    depthValue = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * glfwGetTime()) * cos(glfwGetTime() + distFromCentre/maxDistFromCentre * 10);
                 } else {
                     depthValue = 0.0f;
                 }
