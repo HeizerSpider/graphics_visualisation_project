@@ -228,8 +228,8 @@ int main() {
         0.5f,  0.0f, 0.5f    //
     };                       //
 
-    float vertices[sizeof(pyramid) / sizeof(float)];
-    std::copy(std::begin(pyramid), std::end(pyramid), std::begin(vertices));
+    float vertices[sizeof(cube) / sizeof(float)];
+    std::copy(std::begin(cube), std::end(cube), std::begin(vertices));
 
     glm::vec3 cubePositions[grid_size][grid_size];
     float depthValues[grid_size][grid_size];
