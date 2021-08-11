@@ -35,7 +35,7 @@ int displayMode = 0;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 100.0f));
-// Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+int camera_speed = 20;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -475,6 +475,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
                   int mods) {
     if (action == GLFW_RELEASE) return;  // only handle press events
     if (key == GLFW_KEY_T) transparent = !transparent;
+    std::cout << "displayMode: " << displayMode << std::endl;
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this
@@ -483,15 +484,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime * 20);
+        camera.ProcessKeyboard(FORWARD, deltaTime * camera_speed);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime * 20);
+        camera.ProcessKeyboard(BACKWARD, deltaTime * camera_speed);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime * 20);
+        camera.ProcessKeyboard(LEFT, deltaTime * camera_speed);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime * 20);
+        camera.ProcessKeyboard(RIGHT, deltaTime * camera_speed);
     if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) displayMode = 0;
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) displayMode = 1;
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) displayMode = 2;
@@ -524,8 +524,6 @@ void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
         displayMode = (displayMode + 1) % 5;
     }
-
-    std::cout << "displayMode: " << displayMode << std::endl;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
