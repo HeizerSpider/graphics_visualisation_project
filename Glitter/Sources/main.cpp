@@ -148,46 +148,46 @@ int main() {
     // CUBE
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,  //
-        0.5f, -0.5f, -0.5f,   //
-        0.5f, 0.5f, -0.5f,    //
-        0.5f, 0.5f, -0.5f,    //
-        -0.5f, 0.5f, -0.5f,   //
+         0.5f, -0.5f, -0.5f,  //
+         0.5f,  0.5f, -0.5f,  //
+         0.5f,  0.5f, -0.5f,  //
+        -0.5f,  0.5f, -0.5f,  //
         -0.5f, -0.5f, -0.5f,  //
                               //
-        -0.5f, -0.5f, 0.5f,   //
-        0.5f, -0.5f, 0.5f,    //
-        0.5f, 0.5f, 0.5f,     //
-        0.5f, 0.5f, 0.5f,     //
-        -0.5f, 0.5f, 0.5f,    //
-        -0.5f, -0.5f, 0.5f,   //
+        -0.5f, -0.5f,  0.5f,  //
+         0.5f, -0.5f,  0.5f,  //
+         0.5f,  0.5f,  0.5f,  //
+         0.5f,  0.5f,  0.5f,  //
+        -0.5f,  0.5f,  0.5f,  //
+        -0.5f, -0.5f,  0.5f,  //
                               //
-        -0.5f, 0.5f, 0.5f,    //
-        -0.5f, 0.5f, -0.5f,   //
+        -0.5f,  0.5f,  0.5f,  //
+        -0.5f,  0.5f, -0.5f,  //
         -0.5f, -0.5f, -0.5f,  //
         -0.5f, -0.5f, -0.5f,  //
-        -0.5f, -0.5f, 0.5f,   //
-        -0.5f, 0.5f, 0.5f,    //
+        -0.5f, -0.5f,  0.5f,  //
+        -0.5f,  0.5f,  0.5f,  //
                               //
-        0.5f, 0.5f, 0.5f,     //
-        0.5f, 0.5f, -0.5f,    //
-        0.5f, -0.5f, -0.5f,   //
-        0.5f, -0.5f, -0.5f,   //
-        0.5f, -0.5f, 0.5f,    //
-        0.5f, 0.5f, 0.5f,     //
+         0.5f,  0.5f,  0.5f,  //
+         0.5f,  0.5f, -0.5f,  //
+         0.5f, -0.5f, -0.5f,  //
+         0.5f, -0.5f, -0.5f,  //
+         0.5f, -0.5f,  0.5f,  //
+         0.5f,  0.5f,  0.5f,  //
                               //
         -0.5f, -0.5f, -0.5f,  //
-        0.5f, -0.5f, -0.5f,   //
-        0.5f, -0.5f, 0.5f,    //
-        0.5f, -0.5f, 0.5f,    //
-        -0.5f, -0.5f, 0.5f,   //
+         0.5f, -0.5f, -0.5f,  //
+         0.5f, -0.5f,  0.5f,  //
+         0.5f, -0.5f,  0.5f,  //
+        -0.5f, -0.5f,  0.5f,  //
         -0.5f, -0.5f, -0.5f,  //
                               //
-        -0.5f, 0.5f, -0.5f,   //
-        0.5f, 0.5f, -0.5f,    //
-        0.5f, 0.5f, 0.5f,     //
-        0.5f, 0.5f, 0.5f,     //
-        -0.5f, 0.5f, 0.5f,    //
-        -0.5f, 0.5f, -0.5f    //
+        -0.5f,  0.5f, -0.5f,  //
+         0.5f,  0.5f, -0.5f,  //
+         0.5f,  0.5f,  0.5f,  //
+         0.5f,  0.5f,  0.5f,  //
+        -0.5f,  0.5f,  0.5f,  //
+        -0.5f,  0.5f, -0.5f   //
     };
 
     // EQUILATERAL TRIANGLE
@@ -224,6 +224,7 @@ int main() {
     // };                       //
 
     glm::vec3 cubePositions[grid_size][grid_size];
+    float depthValues[grid_size][grid_size];
     glm::vec4 mappedColors[grid_size][grid_size];
 
     unsigned int VBO, VAO;
@@ -286,20 +287,19 @@ int main() {
             float y = i * -1.0f;
             for (unsigned int j = 0; j < grid_size; j++) {
                 float x = j * 1.0f;
-
-                float depthValue = 0.0f;
+                // float depthValue = 0.0f;
                 
                 // std::cout << "Display mode: " << displayMode << std::endl;
                 if(displayMode == 0){
-                    depthValue = 0.0f;
+                    depthValues[i][j] = 0.0f;
                 } else if (displayMode == 1){
-                    depthValue = rgbaVector[4*(i*100+j)]*10; 
+                    depthValues[i][j] = rgbaVector[4*(i*100+j)]*10; 
                 } else if (displayMode == 2){
-                    depthValue = rgbaVector[4*(i*100+j)+1]*10; 
+                    depthValues[i][j] = rgbaVector[4*(i*100+j)+1]*10; 
                 } else if (displayMode == 3){
-                    depthValue = rgbaVector[4*(i*100+j)+2]*10; 
+                    depthValues[i][j] = rgbaVector[4*(i*100+j)+2]*10; 
                 } else if (displayMode == 4){
-                    depthValue = 1.5 * sin(glfwGetTime() * 2 + j * 100);
+                    depthValues[i][j] = 1.5 * sin(glfwGetTime() * 2 + j * 100);
                 } else if (displayMode == 5){
 
                     float centre = grid_size/2;
@@ -311,10 +311,10 @@ int main() {
                     float rippleTime = glfwGetTime() - startRipple;
 
                     if (rippleTime > distFromCentre/maxDistFromCentre * 10) {
-                        depthValue = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * rippleTime) * cos(rippleTime + distFromCentre/maxDistFromCentre * 10);
-                    } else {
-                        depthValue = 0.0f;
+                        depthValues[i][j] = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * rippleTime) * cos(rippleTime + distFromCentre/maxDistFromCentre * 10);
                     }
+                    // else { depthValues[i][j] = 0.0f; }
+                    
                 } else if (displayMode == 6){
                     
                     float x_origin = grid_size/4;
@@ -327,13 +327,13 @@ int main() {
                     float rippleTime = glfwGetTime() - startRipple;
 
                     if (rippleTime > distFromCentre/maxDistFromCentre * 10) {
-                        depthValue = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * rippleTime) * cos(rippleTime + distFromCentre/maxDistFromCentre * 10);
-                    } else {
-                        depthValue = 0.0f;
-                    }
+                        // depth6 = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * rippleTime) * cos(rippleTime + distFromCentre/maxDistFromCentre * 10);
+                        depthValues[i][j] = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * rippleTime) * cos(rippleTime + distFromCentre/maxDistFromCentre * 10);
+                    } 
+                    // else { depthValues[i][j] = 0.0f; }
                 }
 
-                cubePositions[i][j] = glm::vec3(x, y, depthValue);
+                cubePositions[i][j] = glm::vec3(x, y, depthValues[i][j]);
             }
         }
 
