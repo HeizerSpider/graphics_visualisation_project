@@ -31,7 +31,6 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-int displayMode = 0;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 100.0f));
@@ -49,7 +48,9 @@ float startRipple;
 #define MAX_BUFFER_SIZE 1024
 const double PI = std::atan(1.0) * 4;
 
-unsigned int effect_num = 0;
+// Effects
+int displayMode = 0;
+int shapeMode = 0;
 bool transparent = false;
 int grid_size;
 
@@ -150,7 +151,7 @@ int main() {
     // ------------------------------------------------------------------
 
     // CUBE
-    float vertices[] = {
+    float cube[] = {
         -0.5f, -0.5f, -0.5f,  //
         0.5f, -0.5f, -0.5f,   //
         0.5f, 0.5f, -0.5f,    //
@@ -195,37 +196,40 @@ int main() {
     };
 
     // EQUILATERAL TRIANGLE
-    // float vertices[] = {
-    //     0.0f, 0.0f,   0.0f,  //
-    //     0.5f, 0.866f, 0.0f,  //
-    //     1.0f, 0.0f,   0.0f,  //
-    // };                       //
+    float triangle[] = {
+        0.0f, 0.0f,   0.0f,  //
+        0.5f, 0.866f, 0.0f,  //
+        1.0f, 0.0f,   0.0f,  //
+    };                       //
 
     // PYRAMID
-    // float vertices[] = {
-    //     0.0f,  1.0f, 0.0f,  //
-    //     0.5f,  0.0f, 0.5f,  //
-    //     -0.5f, 0.0f, 0.5f,  //
-    //
-    //     0.0f,  1.0f, 0.0f,   //
-    //     -0.5f, 0.0f, 0.5f,   //
-    //     -0.5f, 0.0f, -0.5f,  //
-    //
-    //     0.0f,  1.0f, 0.0f,   //
-    //     -0.5f, 0.0f, -0.5f,  //
-    //     0.5f,  0.0f, -0.5f,  //
-    //
-    //     0.0f,  1.0f, 0.0f,   //
-    //     0.5f,  0.0f, -0.5f,  //
-    //     0.5f,  0.0f, 0.5f,   //
-    //
-    //     0.5f,  0.0f, 0.5f,   //
-    //     -0.5f, 0.0f, 0.5f,   //
-    //     -0.5f, 0.0f, -0.5f,  //
-    //     -0.5f, 0.0f, -0.5f,  //
-    //     0.5f,  0.0f, -0.5f,  //
-    //     0.5f,  0.0f, 0.5f    //
-    // };                       //
+    float pyramid[] = {
+        0.0f,  1.0f, 0.0f,  //
+        0.5f,  0.0f, 0.5f,  //
+        -0.5f, 0.0f, 0.5f,  //
+
+        0.0f,  1.0f, 0.0f,   //
+        -0.5f, 0.0f, 0.5f,   //
+        -0.5f, 0.0f, -0.5f,  //
+
+        0.0f,  1.0f, 0.0f,   //
+        -0.5f, 0.0f, -0.5f,  //
+        0.5f,  0.0f, -0.5f,  //
+
+        0.0f,  1.0f, 0.0f,   //
+        0.5f,  0.0f, -0.5f,  //
+        0.5f,  0.0f, 0.5f,   //
+
+        0.5f,  0.0f, 0.5f,   //
+        -0.5f, 0.0f, 0.5f,   //
+        -0.5f, 0.0f, -0.5f,  //
+        -0.5f, 0.0f, -0.5f,  //
+        0.5f,  0.0f, -0.5f,  //
+        0.5f,  0.0f, 0.5f    //
+    };                       //
+
+    float vertices[sizeof(pyramid) / sizeof(float)];
+    std::copy(std::begin(pyramid), std::end(pyramid), std::begin(vertices));
 
     glm::vec3 cubePositions[grid_size][grid_size];
     float depthValues[grid_size][grid_size];
@@ -310,8 +314,7 @@ int main() {
 
                     float distFromCentre =
                         sqrt(pow(i - centre, 2.0) + pow(j - centre, 2.0));
-                    // std::cout << "distFromCentre: " << distFromCentre <<
-                    // std::endl;
+
                     float maxDistFromCentre =
                         sqrt(pow(centre, 2.0) + pow(centre, 2.0));
 
@@ -324,9 +327,8 @@ int main() {
                             cos(rippleTime +
                                 distFromCentre / maxDistFromCentre * 10);
                     }
-                    // else { depthValues[i][j] = 0.0f; }
 
-                } else if (displayMode > 5) {
+                } else if (displayMode > 5 && displayMode < 10) {
                     float x_origin;
                     float y_origin;
 
@@ -365,7 +367,24 @@ int main() {
                             cos(rippleTime +
                                 distFromCentre / maxDistFromCentre * 10);
                     }
-                    // else { depthValues[i][j] = 0.0f; }
+                } else if (displayMode == 10) {
+                    float centre = grid_size / 2;
+
+                    float distFromCentre =
+                        sqrt(pow(i - centre, 2.0) + pow(j - centre, 2.0));
+
+                    float maxDistFromCentre =
+                        sqrt(pow(centre, 2.0) + pow(centre, 2.0));
+
+                    float rippleTime = glfwGetTime() - startRipple;
+
+                    if (rippleTime > distFromCentre / maxDistFromCentre * 10) {
+                        depthValues[i][j] +=
+                            10 * (maxDistFromCentre - distFromCentre) /
+                            maxDistFromCentre * exp(-0.1 * rippleTime) *
+                            cos(rippleTime +
+                                distFromCentre / maxDistFromCentre * 10);
+                    }
                 }
 
                 cubePositions[i][j] = glm::vec3(x, y, depthValues[i][j]);
@@ -508,6 +527,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
         startRipple = glfwGetTime();
         displayMode = 9;
     }
+
+    if (key == GLFW_KEY_MINUS) displayMode = 10;
 
     std::cout << "displayMode: " << displayMode << std::endl;
 }
