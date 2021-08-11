@@ -315,11 +315,25 @@ int main() {
                     }
                     // else { depthValues[i][j] = 0.0f; }
                     
-                } else if (displayMode == 6){
+                } else if (displayMode > 5){
                     
-                    float x_origin = grid_size/4;
-                    float y_origin = grid_size/4;
+                    float x_origin;
+                    float y_origin;
 
+                    if (displayMode == 6) {             // key press R
+                        x_origin = grid_size/4;
+                        y_origin = grid_size/4;
+                    } else if  (displayMode == 7) {     // key press T
+                        x_origin = 3* grid_size/4;
+                        y_origin = grid_size/4;
+                    } else if  (displayMode == 8) {     // key press F
+                        x_origin = grid_size/4;
+                        y_origin = 3 * grid_size/4;
+                    } else if  (displayMode == 9) {     // key press G
+                        x_origin = 3 * grid_size/4;
+                        y_origin = 3 * grid_size/4;
+                    }
+                     
                     float distFromCentre = sqrt(pow(j - x_origin, 2.0) + pow(i - y_origin, 2.0));
                     // std::cout << "distFromCentre: " << distFromCentre << std::endl;
                     float maxDistFromCentre = sqrt(pow(grid_size - x_origin, 2.0) + pow(grid_size - y_origin, 2.0));
@@ -459,16 +473,28 @@ void processInput(GLFWwindow* window) {
         startRipple = glfwGetTime();
         displayMode = 5;
     }
-    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {  
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {  
         startRipple = glfwGetTime();
         displayMode = 6;
     }
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {  
+        startRipple = glfwGetTime();
+        displayMode = 7;
+    }
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {  
+        startRipple = glfwGetTime();
+        displayMode = 8;
+    }
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {  
+        startRipple = glfwGetTime();
+        displayMode = 9;
+    }
 
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {  
-        displayMode = (displayMode - 1) % 6;
+        displayMode = (displayMode - 1) % 5;
     }
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
-        displayMode = (displayMode + 1) % 6;
+        displayMode = (displayMode + 1) % 5;
     }
 
     std::cout << "displayMode: " << displayMode << std::endl;
