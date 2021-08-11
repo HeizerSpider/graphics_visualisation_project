@@ -476,7 +476,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
     if (action == GLFW_RELEASE) return;  // only handle press events
 
     // Toggle Transparency
-    if (key == GLFW_KEY_T) transparent = !transparent;
+    if (key == GLFW_KEY_Y) transparent = !transparent;
     // Change Effect
     if (key == GLFW_KEY_I) displayMode = (displayMode + 4) % 5;
     if (key == GLFW_KEY_O) displayMode = (displayMode + 1) % 5;
@@ -487,6 +487,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
     if (key == GLFW_KEY_3) displayMode = 3;
     if (key == GLFW_KEY_4) displayMode = 4;
 
+    // Ripples
     if (key == GLFW_KEY_5) {
         startRipple = glfwGetTime();
         displayMode = 5;
@@ -495,7 +496,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
         startRipple = glfwGetTime();
         displayMode = 6;
     }
-    if (key == GLFW_KEY_E) {
+    if (key == GLFW_KEY_T) {
         startRipple = glfwGetTime();
         displayMode = 7;
     }
@@ -542,15 +543,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void mouse_button_callback(GLFWwindow* window, int button, int action,
                            int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        double xpos, ypos;
+        // double xpos, ypos;
         // getting cursor position
-        glfwGetCursorPos(window, &xpos, &ypos);
-        std::cout << "Cursor Position at (" << xpos << " : " << ypos << ")"
-                  << std::endl;
+        // glfwGetCursorPos(window, &xpos, &ypos);
+        // std::cout << "Cursor Position at (" << xpos << " : " << ypos <<
+        //")"           << std::endl;
 
         leftMouseButtonHold = true;
     } else {
         leftMouseButtonHold = false;
+        firstMouse = true;
     }
 }
 
