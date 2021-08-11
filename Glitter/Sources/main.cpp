@@ -228,37 +228,49 @@ int main() {
         0.5f,  0.0f, 0.5f    //
     };                       //
 
-    float vertices[sizeof(cube) / sizeof(float)];
-    std::copy(std::begin(cube), std::end(cube), std::begin(vertices));
-
     glm::vec3 cubePositions[grid_size][grid_size];
     float depthValues[grid_size][grid_size];
     glm::vec4 mappedColors[grid_size][grid_size];
 
     unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-                          (void*)0);
-    glEnableVertexAttribArray(0);
-
-    ourShader.use();
-
     cv::VideoCapture capture(filename);
     cv::Mat frame;
 
     if (!capture.isOpened()) throw "Error when reading steam_avi";
 
-    // render loop
-    // -----------
     while (!glfwWindowShouldClose(window)) {
+        float vertices[sizeof(cube) / sizeof(float)];
+
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+
+        glBindVertexArray(VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+        // Non-optimal for speed
+        if (shapeMode == 0) {
+            glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
+        } else if (shapeMode == 1) {
+            glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle,
+                         GL_STATIC_DRAW);
+        } else if (shapeMode == 2) {
+            glBufferData(GL_ARRAY_BUFFER, sizeof(pyramid), pyramid,
+                         GL_STATIC_DRAW);
+        }
+
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                              (void*)0);
+        glEnableVertexAttribArray(0);
+
+        ourShader.use();
+
+        // render loop
+        // -----------
+
+        // while (!glfwWindowShouldClose(window)) {
+
         // per-frame time logic
         // --------------------
         float currentFrame = glfwGetTime();
@@ -499,6 +511,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
     // Change Effect
     if (key == GLFW_KEY_I) displayMode = (displayMode + 4) % 5;
     if (key == GLFW_KEY_O) displayMode = (displayMode + 1) % 5;
+
+    // Change Shape
+    if (key == GLFW_KEY_K) shapeMode = (shapeMode + 2) % 3;
+    if (key == GLFW_KEY_L) shapeMode = (shapeMode + 1) % 3;
 
     if (key == GLFW_KEY_0) displayMode = 0;
     if (key == GLFW_KEY_1) displayMode = 1;
