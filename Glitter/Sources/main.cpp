@@ -403,6 +403,9 @@ int main() {
                                               // to identity matrix first
                         model = glm::translate(model, cubePositions[i][j]);
 
+                        glm::vec3 translation = {-(grid_size / 2 * 1.0f), (grid_size / 2 * 1.0f), 0.0f};
+                        model = glm::translate(model, translation);
+
                         float blue = frame.at<cv::Vec3b>(i, j)[0];
                         float green = frame.at<cv::Vec3b>(i, j)[1];
                         float red = frame.at<cv::Vec3b>(i, j)[2];
