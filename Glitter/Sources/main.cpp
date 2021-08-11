@@ -20,14 +20,15 @@
 #include <cmath> 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-int depth = 1;
+int displayMode = 0;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 100.0f));
@@ -35,12 +36,15 @@ Camera camera(glm::vec3(0.0f, 0.0f, 100.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
+bool leftMouseButtonHold = false;
 
 // timing
 float deltaTime = 0.0f;  // time between current frame and last frame
 float lastFrame = 0.0f;
+float startRipple;
 
 int grid_size;
+
 bool is_video = false;
 std::string filename = "bad-apple-resized-short.mp4";
 
@@ -117,11 +121,12 @@ int main() {
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, cursor_pos_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); //* show cursor
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -288,32 +293,52 @@ int main() {
         // render boxes
         glBindVertexArray(VAO);
 
-        float centre = grid_size/2;
-        float depthValue = 0.0f;
-
-        float maxDistFromCentre = sqrt(pow(centre, 2.0) + pow(centre, 2.0));
-
         for (unsigned int i = 0; i < grid_size; i++) {
             float y = i * -1.0f;
             for (unsigned int j = 0; j < grid_size; j++) {
                 float x = j * 1.0f;
-                
-                // std::cout<<depth;
-                float depthValue = 0;
-                if(depth == 0){
-                    depthValue = 1.5 * sin(glfwGetTime() * 2 + j * 100);
-                }else if (depth == 1){
-                    depthValue = rgbaVector[4*(i*100+j)]*10; 
-                }else if (depth == 2){
-                    depthValue = rgbaVector[4*(i*100+j)+1]*10; 
-                }else if (depth == 3){
-                    depthValue = rgbaVector[4*(i*100+j)+2]*10; 
-                }else if (depth == 4){
-                    float distFromCentre = sqrt(pow(i - centre, 2.0) + pow(j - centre, 2.0));
 
-                    if (glfwGetTime() > distFromCentre/maxDistFromCentre * 10) {
-                        // depthValue = 15 * cos(glfwGetTime() + distFromCentre * PI);
-                        depthValue = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * glfwGetTime()) * cos(glfwGetTime() + distFromCentre/maxDistFromCentre * 10);
+                float depthValue = 0.0f;
+                
+                // std::cout << "Display mode: " << displayMode << std::endl;
+                if(displayMode == 0){
+                    depthValue = 0.0f;
+                } else if (displayMode == 1){
+                    depthValue = rgbaVector[4*(i*100+j)]*10; 
+                } else if (displayMode == 2){
+                    depthValue = rgbaVector[4*(i*100+j)+1]*10; 
+                } else if (displayMode == 3){
+                    depthValue = rgbaVector[4*(i*100+j)+2]*10; 
+                } else if (displayMode == 4){
+                    depthValue = 1.5 * sin(glfwGetTime() * 2 + j * 100);
+                } else if (displayMode == 5){
+
+                    float centre = grid_size/2;
+
+                    float distFromCentre = sqrt(pow(i - centre, 2.0) + pow(j - centre, 2.0));
+                    // std::cout << "distFromCentre: " << distFromCentre << std::endl;
+                    float maxDistFromCentre = sqrt(pow(centre, 2.0) + pow(centre, 2.0));
+
+                    float rippleTime = glfwGetTime() - startRipple;
+
+                    if (rippleTime > distFromCentre/maxDistFromCentre * 10) {
+                        depthValue = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * rippleTime) * cos(rippleTime + distFromCentre/maxDistFromCentre * 10);
+                    } else {
+                        depthValue = 0.0f;
+                    }
+                } else if (displayMode == 6){
+                    
+                    float x_origin = grid_size/4;
+                    float y_origin = grid_size/4;
+
+                    float distFromCentre = sqrt(pow(j - x_origin, 2.0) + pow(i - y_origin, 2.0));
+                    // std::cout << "distFromCentre: " << distFromCentre << std::endl;
+                    float maxDistFromCentre = sqrt(pow(grid_size - x_origin, 2.0) + pow(grid_size - y_origin, 2.0));
+
+                    float rippleTime = glfwGetTime() - startRipple;
+
+                    if (rippleTime > distFromCentre/maxDistFromCentre * 10) {
+                        depthValue = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * rippleTime) * cos(rippleTime + distFromCentre/maxDistFromCentre * 10);
                     } else {
                         depthValue = 0.0f;
                     }
@@ -387,13 +412,12 @@ int main() {
                     glm::vec4 color = mappedColors[i][j];
 
                     // only render if alpha > 0
-                    if (!color[3]==0) {
-         
-                        ourShader.setVec4("ourColor", color);
-                        ourShader.setMat4("model", model);
+                    // if (!color[3]==0) {
+                    ourShader.setVec4("ourColor", color);
+                    ourShader.setMat4("model", model);
 
-                        glDrawArrays(GL_TRIANGLES, 0, 36);
-                    }
+                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                    // }
                     sphereIndex++;
                 }
             }
@@ -432,16 +456,40 @@ void processInput(GLFWwindow* window) {
         camera.ProcessKeyboard(LEFT, deltaTime * 20);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime * 20);
-    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-        depth -= 1;
-        if (depth == -1){
-            depth = 4;
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+        displayMode = 0;
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+        displayMode = 1;    
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+        displayMode = 2;    
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+        displayMode = 3;    
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+        displayMode = 4;   
+    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+        startRipple = glfwGetTime();
+        displayMode = 5;
+    }
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {  
+        startRipple = glfwGetTime();
+        displayMode = 6;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {  
+        displayMode -= 1;
+        if (displayMode == -1){
+            displayMode = 6;
         }
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-        depth += 1;
-        if (depth == 5){
-            depth = 0;
+    }
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+        displayMode += 1;
+        if (displayMode == 7){
+            displayMode = 0;
         }
+    }
+
+    std::cout << "displayMode: " << displayMode << std::endl;
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
@@ -454,23 +502,47 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+// glfw: whenever the mouse left button is clicked
+// -------------------------------------------------------
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        double xpos, ypos;
+        //getting cursor position
+        glfwGetCursorPos(window, &xpos, &ypos);
+        std::cout << "Cursor Position at (" << xpos << " : " << ypos <<  ")" << std::endl;
+
+        leftMouseButtonHold = true;
+    }
+    else
+    {
+    	leftMouseButtonHold = false;
+    }
+}
+
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    if (firstMouse) {
+void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
+
+    if (leftMouseButtonHold) {
+
+        if (firstMouse) {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+
+        float xoffset = xpos - lastX;
+        float yoffset =
+            lastY - ypos;  // reversed since y-coordinates go from bottom to top
+
         lastX = xpos;
         lastY = ypos;
-        firstMouse = false;
+
+        camera.ProcessMouseMovement(xoffset, yoffset);
+
     }
-
-    float xoffset = xpos - lastX;
-    float yoffset =
-        lastY - ypos;  // reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-
-    camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
