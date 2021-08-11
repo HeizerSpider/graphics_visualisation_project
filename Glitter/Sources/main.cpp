@@ -17,7 +17,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include <glm/gtx/string_cast.hpp>
-#include <cmath> 
+#include <cmath>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -43,14 +43,14 @@ float deltaTime = 0.0f;  // time between current frame and last frame
 float lastFrame = 0.0f;
 float startRipple;
 
+#define MAX_BUFFER_SIZE 1024
+const double PI = std::atan(1.0) * 4;
+
+unsigned int effect_num = 0;
 int grid_size;
 
 bool is_video = false;
 std::string filename = "bad-apple-resized-short.mp4";
-
-#define MAX_BUFFER_SIZE 1024
-
-const double PI = std::atan(1.0)*4;
 
 std::vector<float> LoadColors() {
     std::vector<float> completeRgbVector;
@@ -98,7 +98,6 @@ std::vector<float> LoadColors() {
 std::vector<float> rgbaVector = LoadColors();
 
 int main() {
-    std::cout << filename;
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -149,46 +148,46 @@ int main() {
     // CUBE
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,  //
-         0.5f, -0.5f, -0.5f,  //
-         0.5f,  0.5f, -0.5f,  //
-         0.5f,  0.5f, -0.5f,  //
-        -0.5f,  0.5f, -0.5f,  //
+        0.5f, -0.5f, -0.5f,   //
+        0.5f, 0.5f, -0.5f,    //
+        0.5f, 0.5f, -0.5f,    //
+        -0.5f, 0.5f, -0.5f,   //
         -0.5f, -0.5f, -0.5f,  //
                               //
-        -0.5f, -0.5f,  0.5f,  //
-         0.5f, -0.5f,  0.5f,  //
-         0.5f,  0.5f,  0.5f,  //
-         0.5f,  0.5f,  0.5f,  //
-        -0.5f,  0.5f,  0.5f,  //
-        -0.5f, -0.5f,  0.5f,  //
+        -0.5f, -0.5f, 0.5f,   //
+        0.5f, -0.5f, 0.5f,    //
+        0.5f, 0.5f, 0.5f,     //
+        0.5f, 0.5f, 0.5f,     //
+        -0.5f, 0.5f, 0.5f,    //
+        -0.5f, -0.5f, 0.5f,   //
                               //
-        -0.5f,  0.5f,  0.5f,  //
-        -0.5f,  0.5f, -0.5f,  //
+        -0.5f, 0.5f, 0.5f,    //
+        -0.5f, 0.5f, -0.5f,   //
         -0.5f, -0.5f, -0.5f,  //
         -0.5f, -0.5f, -0.5f,  //
-        -0.5f, -0.5f,  0.5f,  //
-        -0.5f,  0.5f,  0.5f,  //
+        -0.5f, -0.5f, 0.5f,   //
+        -0.5f, 0.5f, 0.5f,    //
                               //
-         0.5f,  0.5f,  0.5f,  //
-         0.5f,  0.5f, -0.5f,  //
-         0.5f, -0.5f, -0.5f,  //
-         0.5f, -0.5f, -0.5f,  //
-         0.5f, -0.5f,  0.5f,  //
-         0.5f,  0.5f,  0.5f,  //
+        0.5f, 0.5f, 0.5f,     //
+        0.5f, 0.5f, -0.5f,    //
+        0.5f, -0.5f, -0.5f,   //
+        0.5f, -0.5f, -0.5f,   //
+        0.5f, -0.5f, 0.5f,    //
+        0.5f, 0.5f, 0.5f,     //
                               //
         -0.5f, -0.5f, -0.5f,  //
-         0.5f, -0.5f, -0.5f,  //
-         0.5f, -0.5f,  0.5f,  //
-         0.5f, -0.5f,  0.5f,  //
-        -0.5f, -0.5f,  0.5f,  //
+        0.5f, -0.5f, -0.5f,   //
+        0.5f, -0.5f, 0.5f,    //
+        0.5f, -0.5f, 0.5f,    //
+        -0.5f, -0.5f, 0.5f,   //
         -0.5f, -0.5f, -0.5f,  //
                               //
-        -0.5f,  0.5f, -0.5f,  //
-         0.5f,  0.5f, -0.5f,  //
-         0.5f,  0.5f,  0.5f,  //
-         0.5f,  0.5f,  0.5f,  //
-        -0.5f,  0.5f,  0.5f,  //
-        -0.5f,  0.5f, -0.5f   //
+        -0.5f, 0.5f, -0.5f,   //
+        0.5f, 0.5f, -0.5f,    //
+        0.5f, 0.5f, 0.5f,     //
+        0.5f, 0.5f, 0.5f,     //
+        -0.5f, 0.5f, 0.5f,    //
+        -0.5f, 0.5f, -0.5f    //
     };
 
     // EQUILATERAL TRIANGLE
@@ -224,14 +223,6 @@ int main() {
     //     0.5f,  0.0f, 0.5f    //
     // };                       //
 
-    // world space positions of our cubes
-    //     glm::vec3 cubePositions[] = {
-    //         glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
-    //         glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
-    //         glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
-    //         glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
-    //         glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
-
     glm::vec3 cubePositions[grid_size][grid_size];
     glm::vec4 mappedColors[grid_size][grid_size];
 
@@ -251,8 +242,6 @@ int main() {
 
     ourShader.use();
 
-    // std::string filename = "bad-apple-resized.mp4";
-    // std::string filename = "bad-apple-resized-short.mp4";
     cv::VideoCapture capture(filename);
     cv::Mat frame;
 
@@ -382,13 +371,14 @@ int main() {
                         rgbaVector[firstIdx], rgbaVector[firstIdx + 1],
                         rgbaVector[firstIdx + 2], rgbaVector[firstIdx + 3]};
 
-                    glm::vec4 color = glm::vec4(pixelRgb[0], pixelRgb[1], pixelRgb[2], pixelRgb[3]);
+                    glm::vec4 color = glm::vec4(pixelRgb[0], pixelRgb[1],
+                                                pixelRgb[2], pixelRgb[3]);
 
                     mappedColors[i][j] = color;
                     pixelIndex++;
                 }
             }
-            
+
             int sphereIndex = 0;
             for (unsigned int i = 0; i < grid_size; i++) {
                 for (unsigned int j = 0; j < grid_size; j++) {
@@ -400,10 +390,9 @@ int main() {
 
                     model = glm::translate(model, cubePositions[i][j]);
 
-                    glm::vec3 translation = {-(grid_size/2 * 1.0f), (grid_size/2 * 1.0f), 0.0f};
+                    glm::vec3 translation = {-(grid_size / 2 * 1.0f),
+                                             (grid_size / 2 * 1.0f), 0.0f};
                     model = glm::translate(model, translation);
-
-                    // std::cout << glm::to_string(model) << std::endl;
 
                     // float angle = 20.0f * i;
                     // model = glm::rotate(model, glm::radians(angle),
@@ -476,16 +465,10 @@ void processInput(GLFWwindow* window) {
     }
 
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {  
-        displayMode -= 1;
-        if (displayMode == -1){
-            displayMode = 6;
-        }
+        displayMode = (displayMode - 1) % 6;
     }
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
-        displayMode += 1;
-        if (displayMode == 7){
-            displayMode = 0;
-        }
+        displayMode = (displayMode + 1) % 6;
     }
 
     std::cout << "displayMode: " << displayMode << std::endl;
