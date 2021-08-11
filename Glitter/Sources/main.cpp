@@ -16,6 +16,9 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include <glm/gtx/string_cast.hpp>
+#include <cmath> 
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -26,7 +29,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(30.0f, 0.0f, 100.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 100.0f));
 // Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -41,6 +44,8 @@ bool is_video = false;
 std::string filename = "bad-apple-resized-short.mp4";
 
 #define MAX_BUFFER_SIZE 1024
+
+const double PI = std::atan(1.0)*4;
 
 std::vector<float> LoadColors() {
     std::vector<float> completeRgbVector;
@@ -138,46 +143,46 @@ int main() {
     // CUBE
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,  //
-        0.5f, -0.5f, -0.5f,   //
-        0.5f, 0.5f, -0.5f,    //
-        0.5f, 0.5f, -0.5f,    //
-        -0.5f, 0.5f, -0.5f,   //
+         0.5f, -0.5f, -0.5f,  //
+         0.5f,  0.5f, -0.5f,  //
+         0.5f,  0.5f, -0.5f,  //
+        -0.5f,  0.5f, -0.5f,  //
         -0.5f, -0.5f, -0.5f,  //
                               //
-        -0.5f, -0.5f, 0.5f,   //
-        0.5f, -0.5f, 0.5f,    //
-        0.5f, 0.5f, 0.5f,     //
-        0.5f, 0.5f, 0.5f,     //
-        -0.5f, 0.5f, 0.5f,    //
-        -0.5f, -0.5f, 0.5f,   //
+        -0.5f, -0.5f,  0.5f,  //
+         0.5f, -0.5f,  0.5f,  //
+         0.5f,  0.5f,  0.5f,  //
+         0.5f,  0.5f,  0.5f,  //
+        -0.5f,  0.5f,  0.5f,  //
+        -0.5f, -0.5f,  0.5f,  //
                               //
-        -0.5f, 0.5f, 0.5f,    //
-        -0.5f, 0.5f, -0.5f,   //
+        -0.5f,  0.5f,  0.5f,  //
+        -0.5f,  0.5f, -0.5f,  //
         -0.5f, -0.5f, -0.5f,  //
         -0.5f, -0.5f, -0.5f,  //
-        -0.5f, -0.5f, 0.5f,   //
-        -0.5f, 0.5f, 0.5f,    //
+        -0.5f, -0.5f,  0.5f,  //
+        -0.5f,  0.5f,  0.5f,  //
                               //
-        0.5f, 0.5f, 0.5f,     //
-        0.5f, 0.5f, -0.5f,    //
-        0.5f, -0.5f, -0.5f,   //
-        0.5f, -0.5f, -0.5f,   //
-        0.5f, -0.5f, 0.5f,    //
-        0.5f, 0.5f, 0.5f,     //
+         0.5f,  0.5f,  0.5f,  //
+         0.5f,  0.5f, -0.5f,  //
+         0.5f, -0.5f, -0.5f,  //
+         0.5f, -0.5f, -0.5f,  //
+         0.5f, -0.5f,  0.5f,  //
+         0.5f,  0.5f,  0.5f,  //
                               //
         -0.5f, -0.5f, -0.5f,  //
-        0.5f, -0.5f, -0.5f,   //
-        0.5f, -0.5f, 0.5f,    //
-        0.5f, -0.5f, 0.5f,    //
-        -0.5f, -0.5f, 0.5f,   //
+         0.5f, -0.5f, -0.5f,  //
+         0.5f, -0.5f,  0.5f,  //
+         0.5f, -0.5f,  0.5f,  //
+        -0.5f, -0.5f,  0.5f,  //
         -0.5f, -0.5f, -0.5f,  //
                               //
-        -0.5f, 0.5f, -0.5f,   //
-        0.5f, 0.5f, -0.5f,    //
-        0.5f, 0.5f, 0.5f,     //
-        0.5f, 0.5f, 0.5f,     //
-        -0.5f, 0.5f, 0.5f,    //
-        -0.5f, 0.5f, -0.5f    //
+        -0.5f,  0.5f, -0.5f,  //
+         0.5f,  0.5f, -0.5f,  //
+         0.5f,  0.5f,  0.5f,  //
+         0.5f,  0.5f,  0.5f,  //
+        -0.5f,  0.5f,  0.5f,  //
+        -0.5f,  0.5f, -0.5f   //
     };
 
     // EQUILATERAL TRIANGLE
@@ -222,13 +227,7 @@ int main() {
     //         glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
 
     glm::vec3 cubePositions[grid_size][grid_size];
-    // for (unsigned int i = 0; i < grid_size; i++) {
-    //     float x = i * 1.0f;
-    //     for (unsigned int j = 0; j < grid_size; j++) {
-    //         float y = j * 1.0f;
-    //         cubePositions[i][j] = glm::vec3(x, y, 0.0f);
-    //     }
-    // }
+    glm::vec4 mappedColors[grid_size][grid_size];
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -288,12 +287,34 @@ int main() {
         // render boxes
         glBindVertexArray(VAO);
 
+        float centre = grid_size/2;
+        float depthValue = 0.0f;
+
+        float maxDistFromCentre = sqrt(pow(centre, 2.0) + pow(centre, 2.0));
+
         for (unsigned int i = 0; i < grid_size; i++) {
             float y = i * -1.0f;
             for (unsigned int j = 0; j < grid_size; j++) {
                 float x = j * 1.0f;
 
-                float depthValue = 1.5 * sin(glfwGetTime() * 2 + j * 100);
+                // float depthValue = 1.5 * sin(glfwGetTime() * 2 + j * 100);
+                float distFromCentre = sqrt(pow(i - centre, 2.0) + pow(j - centre, 2.0));
+
+                if (glfwGetTime() > distFromCentre/maxDistFromCentre * 10) {
+                    // depthValue = 15 * cos(glfwGetTime() + distFromCentre * PI);
+                    depthValue = 10 * (maxDistFromCentre - distFromCentre) / maxDistFromCentre * exp(- 0.1 * glfwGetTime()) * cos(glfwGetTime() + distFromCentre/maxDistFromCentre * 10);
+                } else {
+                    depthValue = 0.0f;
+                }
+
+                // depthValue = 5 * (maxDistFromCentre - distFromCentre)/maxDistFromCentre * exp(- 0.1 * glfwGetTime()) * cos(glfwGetTime() + distFromCentre * PI);
+
+                // depthValue = (100/(10 * distFromCentre)) * exp(- 0.1 * glfwGetTime()) * cos(glfwGetTime() + distFromCentre * PI);
+
+                // 𝐴𝑒−𝑏𝑡𝑐𝑜𝑠(𝑤𝑡+𝜙) 
+
+                std::cout << glfwGetTime() << std::endl;
+                // std::cout << "Cube(" << i << "," << j << ") distFromCentre: " << distFromCentre << std::endl;
 
                 cubePositions[i][j] = glm::vec3(x, y, depthValue);
             }
@@ -325,6 +346,21 @@ int main() {
                 }
             }
         } else {
+            int pixelIndex = 0;
+            for (unsigned int i = 0; i < grid_size; i++) {
+                for (unsigned int j = 0; j < grid_size; j++) {
+                    int firstIdx = pixelIndex * 4;
+                    float pixelRgb[4] = {
+                        rgbaVector[firstIdx], rgbaVector[firstIdx + 1],
+                        rgbaVector[firstIdx + 2], rgbaVector[firstIdx + 3]};
+
+                    glm::vec4 color = glm::vec4(pixelRgb[0], pixelRgb[1], pixelRgb[2], pixelRgb[3]);
+
+                    mappedColors[i][j] = color;
+                    pixelIndex++;
+                }
+            }
+            
             int sphereIndex = 0;
             for (unsigned int i = 0; i < grid_size; i++) {
                 for (unsigned int j = 0; j < grid_size; j++) {
@@ -333,24 +369,28 @@ int main() {
                     glm::mat4 model =
                         glm::mat4(1.0f);  // make sure to initialize matrix to
                                           // identity matrix first
+
                     model = glm::translate(model, cubePositions[i][j]);
+
+                    glm::vec3 translation = {-(grid_size/2 * 1.0f), (grid_size/2 * 1.0f), 0.0f};
+                    model = glm::translate(model, translation);
+
+                    // std::cout << glm::to_string(model) << std::endl;
+
                     // float angle = 20.0f * i;
                     // model = glm::rotate(model, glm::radians(angle),
                     //                     glm::vec3(1.0f, 0.3f, 0.5f));
 
-                    int firstIdx = sphereIndex * 4;
-                    float pixelRgb[4] = {
-                        rgbaVector[firstIdx], rgbaVector[firstIdx + 1],
-                        rgbaVector[firstIdx + 2], rgbaVector[firstIdx + 3]};
+                    glm::vec4 color = mappedColors[i][j];
 
-                    glm::vec4 color = glm::vec4(pixelRgb[0], pixelRgb[1],
-                                                pixelRgb[2], pixelRgb[3]);
-                    // glm::vec4 color = glm::vec4(i / 10.0f, j / 10.0f,
-                    // 0.4f, 1.0f);
-                    ourShader.setVec4("ourColor", color);
-                    ourShader.setMat4("model", model);
+                    // only render if alpha > 0
+                    if (!color[3]==0) {
+         
+                        ourShader.setVec4("ourColor", color);
+                        ourShader.setMat4("model", model);
 
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                        glDrawArrays(GL_TRIANGLES, 0, 36);
+                    }
                     sphereIndex++;
                 }
             }
