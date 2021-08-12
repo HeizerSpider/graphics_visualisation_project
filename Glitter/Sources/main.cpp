@@ -304,6 +304,10 @@ int main() {
         // render boxes
         glBindVertexArray(VAO);
 
+        if (is_video == true) {
+            capture >> frame;
+        }
+
         for (unsigned int i = 0; i < grid_size; i++) {
             float y = i * -1.0f;
             for (unsigned int j = 0; j < grid_size; j++) {
@@ -314,11 +318,27 @@ int main() {
                 if (displayMode == 0) {
                     depthValues[i][j] = 0.0f;
                 } else if (displayMode == 1) {
-                    depthValues[i][j] = rgbaVector[4 * (i * 100 + j)] * 10;
+                    if (is_video == true) {
+                        depthValues[i][j] = frame.at<cv::Vec3b>(i, j)[2];
+                    } else {
+                        depthValues[i][j] = rgbaVector[4 * (i * 100 + j)] * 10;
+                    }
+
                 } else if (displayMode == 2) {
-                    depthValues[i][j] = rgbaVector[4 * (i * 100 + j) + 1] * 10;
+                    if (is_video == true) {
+                        depthValues[i][j] = frame.at<cv::Vec3b>(i, j)[1];
+                    } else {
+                        depthValues[i][j] =
+                            rgbaVector[4 * (i * 100 + j) + 1] * 10;
+                    }
                 } else if (displayMode == 3) {
-                    depthValues[i][j] = rgbaVector[4 * (i * 100 + j) + 2] * 10;
+                    if (is_video == true) {
+                        depthValues[i][j] = frame.at<cv::Vec3b>(i, j)[0];
+                    } else {
+                        depthValues[i][j] =
+                            rgbaVector[4 * (i * 100 + j) + 2] * 10;
+                    }
+
                 } else if (displayMode == 4) {
                     depthValues[i][j] = 1.5 * sin(glfwGetTime() * 2 + j * 100);
                 } else if (displayMode == 5) {
@@ -404,7 +424,7 @@ int main() {
         }
 
         if (is_video == true) {
-            capture >> frame;
+            // capture >> frame;
             if (!frame.empty()) {
                 for (unsigned int i = 0; i < grid_size; i++) {
                     for (unsigned int j = 0; j < grid_size; j++) {
@@ -415,7 +435,8 @@ int main() {
                                               // to identity matrix first
                         model = glm::translate(model, cubePositions[i][j]);
 
-                        glm::vec3 translation = {-(grid_size / 2 * 1.0f), (grid_size / 2 * 1.0f), 0.0f};
+                        glm::vec3 translation = {-(grid_size / 2 * 1.0f),
+                                                 (grid_size / 2 * 1.0f), 0.0f};
                         model = glm::translate(model, translation);
 
                         float blue = frame.at<cv::Vec3b>(i, j)[0];
