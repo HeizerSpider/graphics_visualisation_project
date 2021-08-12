@@ -117,7 +117,7 @@ int main() {
     // glfw window creation
     // --------------------
     GLFWwindow* window =
-        glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+        glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Display Matrix", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -294,7 +294,7 @@ int main() {
         // change every frame)
         glm::mat4 projection = glm::perspective(
             glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT,
-            0.1f, 500.0f);
+            0.1f, 1000.0f);
         ourShader.setMat4("projection", projection);
 
         // camera/view transformation
