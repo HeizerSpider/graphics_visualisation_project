@@ -24,3 +24,8 @@ cd Display_Matrix
 ./Display_Matrix
 ```
 
+### Video prep
+``` sh
+ffmpeg -i <<filename>> -filter_complex [0:v]scale=100x100 -c:a copy <<filename>>-resized.<<ext>>
+```
+
