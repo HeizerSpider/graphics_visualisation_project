@@ -294,7 +294,7 @@ int main() {
         // change every frame)
         glm::mat4 projection = glm::perspective(
             glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT,
-            0.1f, 500.0f);
+            0.1f, 1000.0f);
         ourShader.setMat4("projection", projection);
 
         // camera/view transformation
